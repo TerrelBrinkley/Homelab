@@ -18,7 +18,6 @@ services:
       - 6969:6969 # Whisparr
       - 7878:7878 # Radarr
       - 8085:8085 # qbittorrent
-      - 9117:9117 # Jackett
       - 8989:8989 # Sonarr
       - 9696:9696 # Prowlarr
     volumes:
@@ -54,21 +53,6 @@ services:
     depends_on:
       - gluetun
     restart: always
-
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    container_name: jackett
-    network_mode: "service:gluetun"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - AUTO_UPDATE=true #optional
-      - RUN_OPTS= #optional
-    volumes:
-      - /volume1/docker/arr-stack/jackett/data:/config
-      - /data:/data
-    restart: unless-stopped
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -157,18 +141,3 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/wizarr/database:/data/database
-
-  notifiarr:
-    image: golift/notifiarr
-    container_name: notifiarr
-    network_mode: "service:gluetun"
-    hostname: notifiarr
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /volume1/docker/arr-stack/notifiarr/config:/config
-      - /var/run/utmp:/var/run/utmp
-      - /etc/machine-id:/etc/machine-id
