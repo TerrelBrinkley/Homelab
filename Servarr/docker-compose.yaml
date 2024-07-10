@@ -157,3 +157,18 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/wizarr/database:/data/database
+
+  notifiarr:
+    image: golift/notifiarr
+    container_name: notifiarr
+    network_mode: "service:gluetun"
+    hostname: notifiarr
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /volume1/docker/arr-stack/notifiarr/config:/config
+      - /var/run/utmp:/var/run/utmp
+      - /etc/machine-id:/etc/machine-id
