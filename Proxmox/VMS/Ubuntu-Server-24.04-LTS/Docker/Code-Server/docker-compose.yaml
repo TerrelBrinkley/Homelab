@@ -1,0 +1,21 @@
+version: "3"
+services:
+  code-server:
+    image: codercom/code-server:latest
+    container_name: code-server
+    network_mode: host
+    stdin_open: true
+    tty: true
+    ports:
+      - 8080:8080
+    volumes:
+      - $HOME/.local:/home/coder/.local
+      - $HOME/.config:/home/coder/.config
+      - $PWD:/home/coder/project
+    environment:
+      - DOCKER_USER=$USER
+      - PASSWORD='super secure PASSWORD'
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    restart: unless-stopped
