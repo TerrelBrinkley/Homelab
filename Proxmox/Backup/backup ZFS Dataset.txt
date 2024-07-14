@@ -1,0 +1,14 @@
+#ZFS Pool Creation, Mountpoints, aand Datasets
+
+#ZFS Mountpoints
+mkdir /mnt/backup/Proxmox
+mkdir /mnt/backup/TrueNAS-SCALE
+mkdir /mnt/backup/Ubuntu-Server-24.04-LTS
+mkdir /mnt/backup/Windows-Server-2022
+
+#ZFS Datasets
+zfs create hdd_pool/backups
+zfs create hdd_pool/backups/Proxmox -o mountpoint=/mnt/backup/Proxmox
+zfs create hdd_pool/backups/TrueNAS-SCALE -o mountpoint=/mnt/backup/TrueNAS-SCALE
+zfs create hdd_pool/backups/Ubuntu-Server-24.04-LTS -o mountpoint=/mnt/backup/Ubuntu-Server-24.04-LTS
+zfs create hdd_pool/backups/Windows-Server-2022 -o mountpoint=/mnt/backup/Windows-Server-2022
