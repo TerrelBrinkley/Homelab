@@ -8,8 +8,6 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - REPO_USER=$USER
-      - REPO_PASS="your password"
       - WATCHTOWER_POLL-INTERVAL=604800
       - WATCHTOWER_REMOVE_VOLUMES=true
     restart: unless-stopped
