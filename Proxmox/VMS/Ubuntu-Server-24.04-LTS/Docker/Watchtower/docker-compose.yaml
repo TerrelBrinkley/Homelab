@@ -10,5 +10,5 @@ services:
       - TZ=America/New_York
       - WATCHTOWER_POLL-INTERVAL=604800
       - WATCHTOWER_REMOVE_VOLUMES=true
-      - WATCHTOWER_RUN_ONCE=true
+      - WATCHTOWER_RUN_ONCE=true #Optional for first init run
     restart: unless-stopped
