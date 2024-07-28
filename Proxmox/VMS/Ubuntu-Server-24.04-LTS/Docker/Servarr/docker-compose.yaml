@@ -133,7 +133,7 @@ services:
     restart: unless-stopped
 
   wizarr:
-    image: ghcr.io/wizarrrr/wizarr:latest
+    image: ghcr.io/wizarrrr/wizarr:nightly
     container_name: wizarr
     network_mode: "service:gluetun"
     environment:
@@ -143,8 +143,6 @@ services:
     volumes:
       - /volume1/docker/arr-stack/wizarr/database:/data/database
 
-    services:
-  
   homarr:
     image: ghcr.io/ajnart/homarr:latest
     container_name: homarr
