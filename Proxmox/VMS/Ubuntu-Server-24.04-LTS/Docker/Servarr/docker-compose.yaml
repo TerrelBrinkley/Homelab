@@ -16,6 +16,7 @@ services:
       - 6881:6881
       - 6881:6881/udp
       - 6969:6969 # Whisparr
+      - 7575:7575 # Homarr
       - 7878:7878 # Radarr
       - 8085:8085 # qbittorrent
       - 8989:8989 # Sonarr
@@ -141,3 +142,20 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/wizarr/database:/data/database
+
+    services:
+  
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /volume1/docker/arr-stack/homarr/configs:/app/data/configs
+      - /volume1/docker/arr-stack/homarr/icons:/app/public/icons
+      - /data:/data
+    restart: unless-stopped
