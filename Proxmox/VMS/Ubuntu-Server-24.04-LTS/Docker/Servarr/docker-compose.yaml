@@ -50,7 +50,7 @@ services:
       - WEBUI_PORT=8085
     volumes:
       - /volume1/docker/arr-stack/qbittorrent:/config
-      - /data:/data
+      - /mnt/nfs/plex/data/torrents:/data/torrents
     depends_on:
       - gluetun
     restart: always
@@ -65,7 +65,7 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/sonarr/data:/config
-      - /data:/data
+      - /mnt/nfs/plex/data:/data
     restart: unless-stopped
 
   prowlarr:
@@ -90,21 +90,7 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/radarr/data:/config
-      - /data:/data 
-    restart: unless-stopped
-
-  whisparr:
-    image: ghcr.io/hotio/whisparr
-    container_name: whisparr
-    network_mode: "service:gluetun"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - UMASK=002
-      - TZ=America/New_York
-    volumes:
-      - /volume1/docker/arr-stack/whisparr/data:/config
-      - /data:/data
+      - /mnt/nfs/plex/data:/data
     restart: unless-stopped
 
   overseerr:
@@ -129,11 +115,11 @@ services:
       - TZ=America/New_York
     volumes:
       - /volume1/docker/arr-stack/bazarr/config:/config
-      - /data/media:/data/media
+      - /mnt/nfs/plex/data/media:/data/media
     restart: unless-stopped
 
   wizarr:
-    image: ghcr.io/wizarrrr/wizarr:nightly
+    image: ghcr.io/wizarrrr/wizarr:latest
     container_name: wizarr
     network_mode: "service:gluetun"
     environment:
@@ -155,5 +141,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
       - /volume1/docker/arr-stack/homarr/configs:/app/data/configs
       - /volume1/docker/arr-stack/homarr/icons:/app/public/icons
-      - /data:/data
+      - /mnt/nfs/plex/data:/data
     restart: unless-stopped
