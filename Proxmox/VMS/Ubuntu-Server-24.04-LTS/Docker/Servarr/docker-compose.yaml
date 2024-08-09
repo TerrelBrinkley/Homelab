@@ -15,7 +15,6 @@ services:
       - 6767:6767 # Bazarr
       - 6881:6881
       - 6881:6881/udp
-      - 6969:6969 # Whisparr
       - 7575:7575 # Homarr
       - 7878:7878 # Radarr
       - 8085:8085 # qbittorrent
