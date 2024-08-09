@@ -140,5 +140,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
       - /volume1/docker/arr-stack/homarr/configs:/app/data/configs
       - /volume1/docker/arr-stack/homarr/icons:/app/public/icons
-      - /mnt/nfs/plex/data:/data
     restart: unless-stopped
