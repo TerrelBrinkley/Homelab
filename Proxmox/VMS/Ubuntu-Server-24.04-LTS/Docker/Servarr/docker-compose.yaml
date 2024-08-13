@@ -31,7 +31,7 @@ services:
       # - OPENVPN_PASSWORD=
       # Wireguard:
       - WIREGUARD_PRIVATE_KEY= # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
-      - WIREGUARD_ADDRESSES=
+      - WIREGUARD_ADDRESSES= # See Above
       # Timezone for accurate log times
       - TZ=America/New_York
       # Server list updater
