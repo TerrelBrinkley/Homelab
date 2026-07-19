@@ -8,10 +8,10 @@ services:
       - NET_ADMIN                                                                    # Required for NordVPN to control network routing
       - NET_RAW                                                                      # Required for packet manipulation
     environment:
-      - TOKEN=e9f2ab88139d11f3693bee818f28f49be226d6198f247d7e4eb73cce7bf6be45       # Paste your generated token here
+      - TOKEN=       # Paste your generated token here
       - TECHNOLOGY=NordLynx                                                          # Uses fast WireGuard-based connections
       - CONNECT=United_States                                                        # Change to your preferred country/city
-      - NETWORK=192.168.86.0/24                                                      # CHANGE THIS to your home router's local subnet
+      - NETWORK=xxx.xxx.xx.x.x/24                                                      # CHANGE THIS to your home router's local subnet
       - POST_CONNECT=nordvpn whitelist add subnet 192.168.86.0/24 && nordvpn whitelist add port 8080                                         # FORCE NORDVPN DAEMON TO MANUALLY BYPASS LAN & WEB PORT INSIDE IPTABLES
       - KILLSWITCH=Enable                                                            # Disconnects network immediately if VPN drops
     ports:
