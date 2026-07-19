@@ -1,63 +1,49 @@
-version: "3"
+version: "3.8"
+
 services:
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun
-    # line above must be uncommented to allow external containers to connect.
-    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+  vpn:
+    image: ghcr.io/bubuntux/nordvpn:latest
+    container_name: nordvpn
     cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    ports:
-      - 5055:5055 # Overseerr
-      - 5690:5690 # Wizarr
-      - 6767:6767 # Bazarr
-      - 6881:6881
-      - 6881:6881/udp
-      - 7575:7575 # Homarr
-      - 7878:7878 # Radarr
-      - 8085:8085 # qbittorrent
-      - 8989:8989 # Sonarr
-      - 9696:9696 # Prowlarr
-    volumes:
-      - /volume1/docker/arr-stack:/gluetun
+      - NET_ADMIN                                                                    # Required for NordVPN to control network routing
+      - NET_RAW                                                                      # Required for packet manipulation
     environment:
-      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=wireguard
-      # OpenVPN:
-      # - OPENVPN_USER=
-      # - OPENVPN_PASSWORD=
-      # Wireguard:
-      - WIREGUARD_PRIVATE_KEY= # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
-      - WIREGUARD_ADDRESSES= # See Above
-      # Timezone for accurate log times
-      - TZ=America/New_York
-      # Server list updater
-      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
-      - UPDATER_PERIOD=24h
+      - TOKEN=e9f2ab88139d11f3693bee818f28f49be226d6198f247d7e4eb73cce7bf6be45       # Paste your generated token here
+      - TECHNOLOGY=NordLynx                                                          # Uses fast WireGuard-based connections
+      - CONNECT=United_States                                                        # Change to your preferred country/city
+      - NETWORK=192.168.86.0/24                                                      # CHANGE THIS to your home router's local subnet
+      - POST_CONNECT=nordvpn whitelist add subnet 192.168.86.0/24 && nordvpn whitelist add port 8080                                         # FORCE NORDVPN DAEMON TO MANUALLY BYPASS LAN & WEB PORT INSIDE IPTABLES
+      - KILLSWITCH=Enable                                                            # Disconnects network immediately if VPN drops
+    ports:
+      - 8080:8080                                                                    # qBittorrent Web UI port exposed on the VPN container
+      - 6881:6881                                                                    # Torrent incoming TCP port
+      - 6881:6881/udp                                                                # Torrent incoming UDP port
+    sysctls:
+      - net.ipv4.ip_forward=1                                                        # Enables IP routing for the combined network
+    restart: unless-stopped
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    network_mode: "service:gluetun"
+    network_mode: "service:vpn"                                                      # Locks qBittorrent's network entirely into the VPN
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - WEBUI_PORT=8085
+      - WEBUI_PORT=8080
     volumes:
       - /volume1/docker/arr-stack/qbittorrent:/config
       - /mnt/nfs/plex/data/torrents:/data/torrents
+    restart: unless-stopped
     depends_on:
-      - gluetun
-    restart: always
+      - vpn                                                                          # Ensures the VPN boots first
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
-    network_mode: "service:gluetun"
+    network_mode: bridge
+    ports:
+      - "8989:8989"                                                                  # Exposes Sonarr Web UI
     environment:
       - PUID=1000
       - PGID=1000
@@ -70,7 +56,9 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
-    network_mode: "service:gluetun"
+    network_mode: bridge
+    ports:
+      - "9696:9696"                                                                  # Exposes Prowlarr Web UI
     environment:
       - PUID=1000
       - PGID=1000
@@ -82,7 +70,9 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
-    network_mode: "service:gluetun"
+    network_mode: bridge
+    ports:
+      - "7878:7878"                                                                  # Exposes Radarr Web UI
     environment:
       - PUID=1000
       - PGID=1000
@@ -95,7 +85,9 @@ services:
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
     container_name: overseerr
-    network_mode: "service:gluetun"
+    network_mode: bridge
+    ports:
+      - "5055:5055"                                                                  # Exposes Overseerr Web UI
     environment:
       - PUID=1000
       - PGID=1000
@@ -107,7 +99,9 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
-    network_mode: "service:gluetun"
+    network_mode: bridge
+    ports:
+      - "6767:6767"                                                                  # Exposes Bazarr Web UI
     environment:
       - PUID=1000
       - PGID=1000
@@ -116,3 +110,9 @@ services:
       - /volume1/docker/arr-stack/bazarr/config:/config
       - /mnt/nfs/plex/data/media:/data/media
     restart: unless-stopped
+
+  watchtower:
+    image: nickfedor/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
